@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { ArrowLeft, Play, Share2 } from "lucide-react";
 import { ActivityFeed } from "@/components/activity-feed";
-import { useState } from "react";
+import { useState, use } from "react";
 
 // This would normally come from an API
 const getSongData = (id: string) => ({
@@ -51,8 +51,13 @@ const getSongData = (id: string) => ({
   })),
 });
 
-export default function SongPage({ params }: { params: { id: string } }) {
-  const song = getSongData(params.id);
+export default function SongPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const resolvedParams = use(params);
+  const song = getSongData(resolvedParams.id);
   const [isPlaying, setIsPlaying] = useState(false);
   const [amount, setAmount] = useState("");
 
@@ -130,7 +135,7 @@ export default function SongPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Activity Feed */}
-            <ActivityFeed songId={params.id} />
+            <ActivityFeed songId={resolvedParams.id} />
           </div>
 
           {/* Sidebar */}
