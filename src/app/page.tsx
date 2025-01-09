@@ -5,7 +5,7 @@ import { SongCard } from "@/components/song-card";
 export default function Home() {
   const songs = [
     {
-      id: "0xC479...bb62",
+      id: "1",
       title: "Cyber Dreams",
       artist: "Neural Beats",
       image: "/placeholder.svg?height=64&width=64",
@@ -22,7 +22,7 @@ export default function Home() {
       ],
     },
     {
-      id: "0xd893...DEBF",
+      id: "2",
       title: "Digital Horizon",
       artist: "AI Ensemble",
       image: "/placeholder.svg?height=64&width=64",
@@ -39,7 +39,7 @@ export default function Home() {
       ],
     },
     {
-      id: "0xC479...bbe2",
+      id: "3",
       title: "Quantum Pulse",
       artist: "ByteBeats",
       image: "/placeholder.svg?height=64&width=64",
@@ -56,7 +56,7 @@ export default function Home() {
       ],
     },
     {
-      id: "0xf677...8068",
+      id: "4",
       title: "Neural Symphony",
       artist: "DataFlow",
       image: "/placeholder.svg?height=64&width=64",

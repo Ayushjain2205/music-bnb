@@ -5,6 +5,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
 
+function generateStableHash(id: string) {
+  const hash = id.split("").reduce((acc, char) => {
+    return ((acc << 5) - acc + char.charCodeAt(0)) >>> 0;
+  }, 0);
+  return hash.toString(16).substring(0, 4);
+}
+
 interface SongCardProps {
   song: {
     id: string;
@@ -20,6 +27,9 @@ interface SongCardProps {
 export function SongCard({ song }: SongCardProps) {
   const isPositive = song.gain >= 0;
   const gainColor = isPositive ? "text-[#00FFFF]" : "text-[#FF0000]";
+  const displayId = `0x${song.id.padStart(4, "0")}...${generateStableHash(
+    song.id
+  )}`;
 
   return (
     <div className="bg-[#1A1522] border border-[#FF00FF]/20 p-4 hover:border-[#FF00FF]/40 transition-colors rounded-lg">
@@ -37,12 +47,12 @@ export function SongCard({ song }: SongCardProps) {
             </div>
           </div>
           <div>
-            <Link href={`/song/${song.id}`}>
+            <Link href={`/song/${encodeURIComponent(song.id)}`}>
               <h3 className="font-bold text-[#00FFFF] font-audiowide hover:text-[#66FFFF] transition-colors">
                 {song.title}
               </h3>
             </Link>
-            <p className="text-sm text-[#FF99D1] font-exo2">{song.id}</p>
+            <p className="text-sm text-[#FF99D1] font-exo2">{displayId}</p>
           </div>
         </div>
         <div className="flex items-center gap-8">
