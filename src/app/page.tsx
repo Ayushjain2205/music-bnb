@@ -1,115 +1,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { SongCard } from "@/components/song-card";
+import { Navbar } from "@/components/navbar";
+import { api } from "@/lib/api";
 
-export default function Home() {
-  const songs = [
-    {
-      id: "1",
-      title: "Cyber Dreams",
-      artist: "Neural Beats",
-      image: "/placeholder.svg?height=64&width=64",
-      price: 0.25,
-      gain: 15.3,
-      data: [
-        { price: 0.22 },
-        { price: 0.2 },
-        { price: 0.23 },
-        { price: 0.21 },
-        { price: 0.24 },
-        { price: 0.22 },
-        { price: 0.25 },
-      ],
-    },
-    {
-      id: "2",
-      title: "Digital Horizon",
-      artist: "AI Ensemble",
-      image: "/placeholder.svg?height=64&width=64",
-      price: 0.09,
-      gain: -5.2,
-      data: [
-        { price: 0.1 },
-        { price: 0.11 },
-        { price: 0.095 },
-        { price: 0.1 },
-        { price: 0.085 },
-        { price: 0.09 },
-        { price: 0.09 },
-      ],
-    },
-    {
-      id: "3",
-      title: "Quantum Pulse",
-      artist: "ByteBeats",
-      image: "/placeholder.svg?height=64&width=64",
-      price: 0.06,
-      gain: 3.4,
-      data: [
-        { price: 0.058 },
-        { price: 0.059 },
-        { price: 0.061 },
-        { price: 0.057 },
-        { price: 0.062 },
-        { price: 0.059 },
-        { price: 0.06 },
-      ],
-    },
-    {
-      id: "4",
-      title: "Neural Symphony",
-      artist: "DataFlow",
-      image: "/placeholder.svg?height=64&width=64",
-      price: 0.18,
-      gain: 22.7,
-      data: [
-        { price: 0.15 },
-        { price: 0.16 },
-        { price: 0.17 },
-        { price: 0.165 },
-        { price: 0.18 },
-        { price: 0.175 },
-        { price: 0.18 },
-      ],
-    },
-  ];
+export default async function Home() {
+  const songs = await api.songs.getAll();
 
   return (
     <div className="min-h-screen bg-[#0D0D15] text-white">
-      {/* Header */}
-      <header className="flex items-center justify-between p-6">
-        <div className="flex items-center gap-8">
-          <h1
-            className="text-2xl font-bold retro-wave-text"
-            style={{
-              fontFamily: "var(--font-press-start-2p)",
-              letterSpacing: "0.1em",
-            }}
-          >
-            TUNECRAFT
-          </h1>
-          <nav className="space-x-6">
-            <Link
-              href="#"
-              className="text-[#FF99D1] hover:text-[#FF00FF] font-exo2"
-            >
-              FAQ
-            </Link>
-            <Link
-              href="#"
-              className="text-[#FF99D1] hover:text-[#FF00FF] font-exo2"
-            >
-              Twitter/X
-            </Link>
-          </nav>
-        </div>
-        <Button
-          className="bg-[#FF00FF] text-white hover:bg-[#FF66B8] font-exo2"
-          size="lg"
-        >
-          Start trading
-        </Button>
-      </header>
+      <Navbar />
 
       {/* Hero */}
       <section className="text-center py-20">
