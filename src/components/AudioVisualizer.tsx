@@ -71,6 +71,7 @@ export function AudioVisualizer({ audioElement }: AudioVisualizerProps) {
 
       analyser.getByteFrequencyData(dataArray);
 
+      // Clear with a semi-transparent background for trail effect
       ctx.fillStyle = "rgba(13, 13, 21, 0.2)";
       ctx.fillRect(0, 0, width, height);
 
@@ -80,12 +81,33 @@ export function AudioVisualizer({ audioElement }: AudioVisualizerProps) {
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * height;
 
-        const r = 255 - i * 2;
-        const g = 50 + i * 2;
-        const b = 150;
+        // Calculate color based on frequency and height
+        const progress = i / bufferLength;
+        let color;
+        if (progress < 0.33) {
+          // Gradient from cyan to pink
+          color = `rgb(${Math.floor(255 * (progress * 3))}, ${Math.floor(
+            255 - progress * 255
+          )}, ${255})`;
+        } else if (progress < 0.66) {
+          // Gradient from pink to magenta
+          color = `rgb(255, ${Math.floor(
+            153 + (progress - 0.33) * 3 * 102
+          )}, ${Math.floor(209 + (progress - 0.33) * 3 * 46)})`;
+        } else {
+          // Gradient to magenta
+          color = `rgb(255, 0, ${Math.floor(255 * ((progress - 0.66) * 3))})`;
+        }
 
-        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        // Add glow effect
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = color;
+
+        ctx.fillStyle = color;
         ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+
+        // Reset shadow for next iteration
+        ctx.shadowBlur = 0;
 
         x += barWidth + 1;
       }
