@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Orbitron, Audiowide, Exo_2, Press_Start_2P } from "next/font/google";
+import { MusicPlayerProvider } from "@/app/contexts/MusicPlayerContext";
+import { MusicPlayer } from "@/components/MusicPlayer";
 
 const orbitron = Orbitron({ subsets: ["latin"], variable: "--font-orbitron" });
 const audiowide = Audiowide({
@@ -29,7 +31,12 @@ export default function RootLayout({
       lang="en"
       className={`${orbitron.variable} ${audiowide.variable} ${exo2.variable} ${pressStart2P.variable}`}
     >
-      <body className={orbitron.className}>{children}</body>
+      <body className={orbitron.className}>
+        <MusicPlayerProvider>
+          {children}
+          <MusicPlayer />
+        </MusicPlayerProvider>
+      </body>
     </html>
   );
 }

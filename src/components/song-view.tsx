@@ -11,41 +11,41 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { ArrowLeft, Play, Share2 } from "lucide-react";
+import { ArrowLeft, Play, Pause, Share2 } from "lucide-react";
 import { ActivityFeed } from "@/components/activity-feed";
 import { useState } from "react";
 import { Song } from "@/types/song";
+import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 
 export function SongView({ song }: { song: Song }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { currentSong, isPlaying, playSong, pauseSong } = useMusicPlayer();
   const [amount, setAmount] = useState("");
+
+  const isSongPlaying = isPlaying && currentSong?.id === song.id;
+
+  const handlePlayPause = () => {
+    if (isSongPlaying) {
+      pauseSong();
+    } else {
+      playSong(song);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0D0D15] text-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[#FF99D1] hover:text-[#FF00FF] mb-4 font-exo2"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            <h1
-              className="text-2xl font-bold retro-wave-text"
-              style={{
-                fontFamily: "var(--font-press-start-2p)",
-                letterSpacing: "0.15em",
-              }}
-            >
-              TUNECRAFT
-            </h1>
-          </Link>
           <div className="flex items-center gap-6">
             <button
-              onClick={() => setIsPlaying(!isPlaying)}
+              onClick={handlePlayPause}
               className="w-16 h-16 rounded-full bg-[#FF00FF] flex items-center justify-center hover:bg-[#FF66B8] transition-colors"
             >
-              <Play className="w-8 h-8 text-white" />
+              {isSongPlaying ? (
+                <Pause className="w-8 h-8 text-white" />
+              ) : (
+                <Play className="w-8 h-8 text-white" />
+              )}
             </button>
             <div>
               <h1 className="text-4xl font-bold text-[#00FFFF] font-audiowide mb-1">

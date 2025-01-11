@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
+import { Play, Pause } from "lucide-react";
+import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 
 function generateStableHash(id: string) {
   const hash = id.split("").reduce((acc, char) => {
@@ -25,11 +27,23 @@ interface SongCardProps {
 }
 
 export function SongCard({ song }: SongCardProps) {
+  const { currentSong, isPlaying, playSong, pauseSong } = useMusicPlayer();
   const isPositive = song.gain >= 0;
   const gainColor = isPositive ? "text-[#00FFFF]" : "text-[#FF0000]";
   const displayId = `0x${song.id.padStart(4, "0")}...${generateStableHash(
     song.id
   )}`;
+
+  const isSongPlaying = isPlaying && currentSong?.id === song.id;
+
+  const handlePlayPause = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isSongPlaying) {
+      pauseSong();
+    } else {
+      playSong(song);
+    }
+  };
 
   return (
     <div className="bg-[#1A1522] border border-[#FF00FF]/20 p-4 hover:border-[#FF00FF]/40 transition-colors rounded-lg">
@@ -42,6 +56,16 @@ export function SongCard({ song }: SongCardProps) {
               fill
               className="object-cover rounded"
             />
+            <button
+              onClick={handlePlayPause}
+              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity"
+            >
+              {isSongPlaying ? (
+                <Pause className="w-8 h-8 text-white" />
+              ) : (
+                <Play className="w-8 h-8 text-white" />
+              )}
+            </button>
             <div className="absolute bottom-1 right-1 text-xs bg-black/80 px-1 rounded font-exo2">
               3:59
             </div>
