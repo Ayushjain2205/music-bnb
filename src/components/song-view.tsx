@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +10,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-import { ArrowLeft, Play, Pause, Share2 } from "lucide-react";
+import { Play, Pause, Share2 } from "lucide-react";
 import { ActivityFeed } from "@/components/activity-feed";
 import { useState } from "react";
 import { Song } from "@/types/song";

@@ -5,10 +5,8 @@ export interface Song {
   image: string;
   price: number;
   gain: number;
+  data: { price: number; date: string }[];
   ticker: string;
   bondingCurve: number;
-  data: {
-    date: string;
-    price: number;
-  }[];
+  audioUrl: string;
 }

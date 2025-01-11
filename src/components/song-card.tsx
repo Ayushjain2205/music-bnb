@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
 import { Play, Pause } from "lucide-react";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
+import { Song } from "@/types/song";
 
 function generateStableHash(id: string) {
   const hash = id.split("").reduce((acc, char) => {
@@ -15,15 +16,7 @@ function generateStableHash(id: string) {
 }
 
 interface SongCardProps {
-  song: {
-    id: string;
-    title: string;
-    artist: string;
-    image: string;
-    price: number;
-    gain: number;
-    data: { price: number }[];
-  };
+  song: Song;
 }
 
 export function SongCard({ song }: SongCardProps) {
@@ -66,9 +59,6 @@ export function SongCard({ song }: SongCardProps) {
                 <Play className="w-8 h-8 text-white" />
               )}
             </button>
-            <div className="absolute bottom-1 right-1 text-xs bg-black/80 px-1 rounded font-exo2">
-              3:59
-            </div>
           </div>
           <div>
             <Link href={`/song/${encodeURIComponent(song.id)}`}>

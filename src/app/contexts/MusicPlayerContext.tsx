@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { Song } from "@/types/song";
 
 type MusicPlayerContextType = {
@@ -23,18 +23,18 @@ export function MusicPlayerProvider({
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const playSong = (song: Song) => {
+  const playSong = useCallback((song: Song) => {
     setCurrentSong(song);
     setIsPlaying(true);
-  };
+  }, []);
 
-  const pauseSong = () => {
+  const pauseSong = useCallback(() => {
     setIsPlaying(false);
-  };
+  }, []);
 
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
+  const togglePlayPause = useCallback(() => {
+    setIsPlaying((prev) => !prev);
+  }, []);
 
   return (
     <MusicPlayerContext.Provider
