@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -14,41 +15,37 @@ import {
 import { ArrowLeft, Play, Pause, Share2 } from "lucide-react";
 import { ActivityFeed } from "@/components/activity-feed";
 import { AudioVisualizer } from "@/components/AudioVisualizer";
-import { useState, useEffect } from "react";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
-import React from "react";
+import { api } from "@/lib/api";
 
-export default function SongPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = React.use(params);
-  const { currentSong, isPlaying, playSong, pauseSong } = useMusicPlayer();
-  const [amount, setAmount] = useState("");
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(
-    null
-  );
+export default function SongPage({ params }: { params: { id: string } }) {
+  const { currentSong, isPlaying, togglePlayPause, setCurrentSongById } =
+    useMusicPlayer();
+  const [amount, setAmount] = React.useState("");
+  const [song, setSong] = React.useState(currentSong);
 
-  useEffect(() => {
-    // Get the audio element from the music player
-    const audio = document.querySelector("audio");
-    if (audio) {
-      setAudioElement(audio);
-    }
-  }, []);
-
-  const isSongPlaying = isPlaying && currentSong?.id === resolvedParams.id;
+  React.useEffect(() => {
+    const loadSong = async () => {
+      try {
+        const songData = await api.songs.getOne(params.id);
+        setSong(songData);
+        await setCurrentSongById(params.id);
+      } catch (error) {
+        console.error("Error loading song:", error);
+      }
+    };
+    loadSong();
+  }, [params.id, setCurrentSongById]);
 
   const handlePlayPause = () => {
-    if (isSongPlaying) {
-      pauseSong();
-    } else if (currentSong) {
-      playSong(currentSong);
+    if (song && song.id !== currentSong?.id) {
+      setCurrentSongById(song.id);
+    } else {
+      togglePlayPause();
     }
   };
 
-  if (!currentSong) return null;
+  if (!song) return null;
 
   return (
     <div className="min-h-screen bg-[#0D0D15] text-white p-6 pb-24">
@@ -67,7 +64,7 @@ export default function SongPage({
               onClick={handlePlayPause}
               className="w-16 h-16 rounded-full bg-[#FF00FF] flex items-center justify-center hover:bg-[#FF66B8] transition-colors"
             >
-              {isSongPlaying ? (
+              {isPlaying && currentSong?.id === song.id ? (
                 <Pause className="w-8 h-8 text-white" />
               ) : (
                 <Play className="w-8 h-8 text-white" />
@@ -75,9 +72,9 @@ export default function SongPage({
             </button>
             <div>
               <h1 className="text-4xl font-bold text-[#00FFFF] font-audiowide mb-1">
-                {currentSong.title}
+                {song.title}
               </h1>
-              <p className="text-[#FF99D1] font-exo2">{currentSong.artist}</p>
+              <p className="text-[#FF99D1] font-exo2">{song.artist}</p>
             </div>
           </div>
         </div>
@@ -88,7 +85,7 @@ export default function SongPage({
             {/* Visualizer */}
             <div className="bg-[#1A1522] border border-[#FF00FF]/20 rounded-lg p-6">
               <div className="h-[200px]">
-                <AudioVisualizer audioElement={audioElement} />
+                <AudioVisualizer />
               </div>
             </div>
 
@@ -96,7 +93,7 @@ export default function SongPage({
             <div className="bg-[#1A1522] border border-[#FF00FF]/20 rounded-lg p-6">
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={currentSong.data}>
+                  <LineChart data={song.data}>
                     <XAxis
                       dataKey="date"
                       stroke="#FF99D1"
@@ -127,7 +124,7 @@ export default function SongPage({
             </div>
 
             {/* Activity Feed */}
-            <ActivityFeed songId={resolvedParams.id} />
+            <ActivityFeed songId={params.id} />
           </div>
 
           {/* Sidebar */}
@@ -136,8 +133,8 @@ export default function SongPage({
             <div className="bg-[#1A1522] border border-[#FF00FF]/20 rounded-lg p-6">
               <div className="relative aspect-square mb-4">
                 <Image
-                  src={currentSong.image}
-                  alt={currentSong.title}
+                  src={song.image}
+                  alt={song.title}
                   fill
                   className="object-cover rounded-lg"
                 />
@@ -183,14 +180,12 @@ export default function SongPage({
               <div className="mt-6 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-[#FF99D1] font-exo2">Ticker:</span>
-                  <span className="text-white font-mono">
-                    {currentSong.ticker}
-                  </span>
+                  <span className="text-white font-mono">{song.ticker}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[#FF99D1] font-exo2">Price:</span>
                   <span className="text-white font-mono">
-                    ${currentSong.price.toFixed(3)}
+                    ${song.price.toFixed(3)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -198,7 +193,7 @@ export default function SongPage({
                     Bonding curve filled:
                   </span>
                   <span className="text-white font-mono">
-                    {currentSong.bondingCurve}%
+                    {song.bondingCurve}%
                   </span>
                 </div>
               </div>

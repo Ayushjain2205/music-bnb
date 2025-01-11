@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import {
   Play,
@@ -17,65 +17,23 @@ export function MusicPlayer() {
   const {
     currentSong,
     isPlaying,
+    currentTime,
+    duration,
+    volume,
     togglePlayPause,
     playNextSong,
     playPreviousSong,
+    seekTo,
+    setVolume,
   } = useMusicPlayer();
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
 
-  useEffect(() => {
-    const initAudio = () => {
-      if (!audioRef.current) {
-        const audio = new Audio();
-        audio.crossOrigin = "anonymous";
-        audioRef.current = audio;
-
-        audio.addEventListener("timeupdate", () => {
-          setCurrentTime(audio.currentTime);
-        });
-
-        audio.addEventListener("loadedmetadata", () => {
-          setDuration(audio.duration);
-        });
-      }
-    };
-
-    initAudio();
-
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (audioRef.current && currentSong) {
-      audioRef.current.src = currentSong.audioUrl;
-      audioRef.current.load();
-      if (isPlaying) {
-        audioRef.current.play().catch((error) => {
-          console.error("Playback failed:", error);
-        });
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isPlaying, currentSong]);
+  const [isMuted, setIsMuted] = React.useState(false);
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const bar = e.currentTarget;
     const rect = bar.getBoundingClientRect();
     const percent = (e.clientX - rect.left) / rect.width;
-    if (audioRef.current) {
-      audioRef.current.currentTime = percent * duration;
-      setCurrentTime(percent * duration);
-    }
+    seekTo(percent * duration);
   };
 
   const handleVolumeChange = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -83,17 +41,16 @@ export function MusicPlayer() {
     const rect = bar.getBoundingClientRect();
     const newVolume = (e.clientX - rect.left) / rect.width;
     setVolume(newVolume);
-    if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-    }
     setIsMuted(newVolume === 0);
   };
 
   const toggleMute = () => {
-    if (audioRef.current) {
-      const newMuted = !isMuted;
-      setIsMuted(newMuted);
-      audioRef.current.volume = newMuted ? 0 : volume;
+    if (isMuted) {
+      setVolume(volume || 1);
+      setIsMuted(false);
+    } else {
+      setVolume(0);
+      setIsMuted(true);
     }
   };
 

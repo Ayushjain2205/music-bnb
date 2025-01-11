@@ -20,7 +20,8 @@ interface SongCardProps {
 }
 
 export function SongCard({ song }: SongCardProps) {
-  const { currentSong, isPlaying, playSong, pauseSong } = useMusicPlayer();
+  const { currentSong, isPlaying, togglePlayPause, setCurrentSongById } =
+    useMusicPlayer();
   const isPositive = song.gain >= 0;
   const gainColor = isPositive ? "text-[#00FFFF]" : "text-[#FF0000]";
   const displayId = `0x${song.id.padStart(4, "0")}...${generateStableHash(
@@ -32,9 +33,9 @@ export function SongCard({ song }: SongCardProps) {
   const handlePlayPause = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isSongPlaying) {
-      pauseSong();
+      togglePlayPause();
     } else {
-      playSong(song);
+      setCurrentSongById(song.id);
     }
   };
 
