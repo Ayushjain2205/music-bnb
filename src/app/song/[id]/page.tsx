@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { Navbar } from "@/components/navbar";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,6 @@ import {
 } from "recharts";
 import { ArrowLeft, Play, Pause, Share2 } from "lucide-react";
 import { ActivityFeed } from "@/components/activity-feed";
-import { AudioVisualizer } from "@/components/AudioVisualizer";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 import { api } from "@/lib/api";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
@@ -45,7 +45,9 @@ export default function SongPage({
 
   const handlePlayPause = () => {
     if (song && song.id !== currentSong?.id) {
-      setCurrentSongById(song.id);
+      setCurrentSongById(song.id).then(() => {
+        togglePlayPause();
+      });
     } else {
       togglePlayPause();
     }
@@ -54,17 +56,11 @@ export default function SongPage({
   if (!song) return null;
 
   return (
-    <div className="min-h-screen bg-[#0D0D15] text-white p-6 pb-24">
+    <div className="min-h-screen bg-[#0D0D15] text-white pb-24">
+      <Navbar />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-[#FF99D1] hover:text-[#FF00FF] mb-4 font-exo2"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Link>
           <div className="flex items-center gap-6">
             <button
               onClick={handlePlayPause}
@@ -151,25 +147,25 @@ export default function SongPage({
                       />
                       <ChartTooltip
                         content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            return (
-                              <div className="bg-[#1A1522] border border-[#333] rounded p-2 text-xs font-mono">
-                                <div className="text-[#666]">
-                                  {new Date(
-                                    payload[0].payload.date
-                                  ).toLocaleDateString("en-US", {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "2-digit",
-                                  })}
-                                </div>
-                                <div className="text-[#a3ffae]">
-                                  ${payload[0].value.toFixed(3)}
-                                </div>
+                          if (!active || !payload?.[0]) return null;
+                          const value = Number(payload[0].value);
+
+                          return (
+                            <div className="bg-[#1A1522] border border-[#333] rounded p-2 text-xs font-mono">
+                              <div className="text-[#666]">
+                                {new Date(
+                                  payload[0].payload.date
+                                ).toLocaleDateString("en-US", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "2-digit",
+                                })}
                               </div>
-                            );
-                          }
-                          return null;
+                              <div className="text-[#a3ffae]">
+                                ${value.toFixed(3)}
+                              </div>
+                            </div>
+                          );
                         }}
                       />
                       <Line

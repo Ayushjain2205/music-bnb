@@ -77,16 +77,26 @@ export function MusicPlayerProvider({
     audio.addEventListener("durationchange", handleDurationChange);
     audio.addEventListener("ended", handleEnded);
 
-    if (isPlaying) {
-      audio.play().catch(console.error);
-    }
-
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("durationchange", handleDurationChange);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [currentSong, isPlaying]);
+  }, [currentSong]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.play().catch((error) => {
+        console.error("Error playing audio:", error);
+        setIsPlaying(false);
+      });
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying]);
 
   const togglePlayPause = useCallback(() => {
     if (!audioRef.current) return;
@@ -104,7 +114,7 @@ export function MusicPlayerProvider({
       const song = await api.songs.getOne(id);
       setCurrentSong(song);
       setCurrentTime(0);
-      setIsPlaying(true);
+      setIsPlaying(false);
     } catch (error) {
       console.error("Error fetching song:", error);
     }
