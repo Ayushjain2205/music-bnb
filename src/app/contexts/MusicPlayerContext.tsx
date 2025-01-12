@@ -23,6 +23,8 @@ type MusicPlayerContextType = {
   setVolume: (volume: number) => void;
   playNextSong: () => void;
   playPreviousSong: () => void;
+  playSong: (song: Song) => void;
+  pauseSong: () => void;
 };
 
 const MusicPlayerContext = createContext<MusicPlayerContextType | undefined>(
@@ -137,6 +139,15 @@ export function MusicPlayerProvider({
     console.log("Play previous song");
   }, []);
 
+  const playSong = useCallback((song: Song) => {
+    setCurrentSong(song);
+    setIsPlaying(true);
+  }, []);
+
+  const pauseSong = useCallback(() => {
+    setIsPlaying(false);
+  }, []);
+
   return (
     <MusicPlayerContext.Provider
       value={{
@@ -151,6 +162,8 @@ export function MusicPlayerProvider({
         setVolume,
         playNextSong,
         playPreviousSong,
+        playSong,
+        pauseSong,
       }}
     >
       {children}
