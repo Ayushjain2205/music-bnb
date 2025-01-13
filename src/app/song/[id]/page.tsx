@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Navbar } from "@/components/navbar";
 import Link from "next/link";
-import Image from "next/image";
+
 import { Button } from "@/components/ui/button";
 import {
   LineChart,
@@ -12,12 +11,55 @@ import {
   YAxis,
   ResponsiveContainer,
   CartesianGrid,
+  TooltipProps,
 } from "recharts";
 import { ArrowLeft, Play, Pause, Share2 } from "lucide-react";
 import { ActivityFeed } from "@/components/activity-feed";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 import { api } from "@/lib/api";
+import { Navbar } from "@/components/navbar";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import SongPixelArt from "@/components/SongPixelArt";
+
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
+
+// Define the type for our chart data
+interface ChartData {
+  date: string;
+  price: number;
+}
+
+// Custom tooltip component with proper type checking
+const CustomTooltip = ({
+  active,
+  payload,
+}: TooltipProps<ValueType, NameType>) => {
+  if (!active || !payload?.[0]) return null;
+
+  const date = new Date(payload[0].payload.date);
+  const value = payload[0].value as number;
+
+  return (
+    <div className="bg-[#1A1522] border border-[#333] rounded-lg p-3 shadow-lg">
+      <div className="space-y-1.5">
+        <div className="text-[#666] text-xs font-mono tracking-tight">
+          {date.toLocaleDateString("en-US", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "2-digit",
+          })}
+        </div>
+        <div className="text-[#a3ffae] text-sm font-mono font-bold">
+          ${value.toFixed(3)}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function SongPage({
   params,
@@ -56,10 +98,12 @@ export default function SongPage({
   if (!song) return null;
 
   return (
-    <div className="min-h-screen bg-[#0D0D15] text-white pb-24">
+    <div className="min-h-screen bg-[#0D0D15] text-white  pb-24">
       <Navbar />
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
+
         <div className="mb-8">
           <div className="flex items-center gap-6">
             <button
@@ -72,11 +116,22 @@ export default function SongPage({
                 <Play className="w-8 h-8 text-white" />
               )}
             </button>
-            <div>
-              <h1 className="text-4xl font-bold text-[#00FFFF] font-audiowide mb-1">
-                {song.title}
-              </h1>
-              <p className="text-[#FF99D1] font-exo2">{song.artist}</p>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14">
+                {currentSong && (
+                  <SongPixelArt
+                    title={currentSong.title}
+                    artist={currentSong.artist}
+                    price={currentSong.price}
+                  />
+                )}
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-[#00FFFF] font-audiowide mb-1">
+                  {song.title}
+                </h1>
+                <p className="text-[#FF99D1] font-exo2">{song.artist}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -145,29 +200,7 @@ export default function SongPage({
                         stroke="#333"
                         vertical={false}
                       />
-                      <ChartTooltip
-                        content={({ active, payload }) => {
-                          if (!active || !payload?.[0]) return null;
-                          const value = Number(payload[0].value);
-
-                          return (
-                            <div className="bg-[#1A1522] border border-[#333] rounded p-2 text-xs font-mono">
-                              <div className="text-[#666]">
-                                {new Date(
-                                  payload[0].payload.date
-                                ).toLocaleDateString("en-US", {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "2-digit",
-                                })}
-                              </div>
-                              <div className="text-[#a3ffae]">
-                                ${value.toFixed(3)}
-                              </div>
-                            </div>
-                          );
-                        }}
-                      />
+                      <ChartTooltip content={CustomTooltip} />
                       <Line
                         type="monotone"
                         dataKey="price"
@@ -193,16 +226,9 @@ export default function SongPage({
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Song Image */}
+            {/* Song Pixel Art */}
             <div className="bg-[#1A1522] border border-[#FF00FF]/20 rounded-lg p-6">
-              <div className="relative aspect-square mb-4">
-                <Image
-                  src={song.image}
-                  alt={song.title}
-                  fill
-                  className="object-cover rounded-lg"
-                />
-              </div>
+              <div className="aspect-square mb-4"></div>
               <Button
                 className="w-full bg-zinc-800 text-white hover:bg-zinc-700 font-exo2"
                 onClick={() => {}}

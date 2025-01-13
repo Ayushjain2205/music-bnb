@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 import { formatTime } from "@/lib/utils";
+import SongPixelArt from "./SongPixelArt";
 
 export function MusicPlayer() {
   const {
@@ -101,13 +102,13 @@ export function MusicPlayer() {
 
           <div className="flex items-center gap-4 flex-1 justify-center">
             <div className="flex items-center gap-3 max-w-[300px] w-full">
-              <Image
-                src={currentSong.image}
-                alt={currentSong.title}
-                width={50}
-                height={50}
-                className="rounded"
-              />
+              <div className="w-[50px] h-[50px]">
+                <SongPixelArt
+                  title={currentSong.title}
+                  artist={currentSong.artist}
+                  price={currentSong.price}
+                />
+              </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-[#00FFFF] font-bold text-sm truncate">
                   {currentSong.title}

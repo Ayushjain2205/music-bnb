@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
 import { Play, Pause } from "lucide-react";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 import { Song } from "@/types/song";
+import SongPixelArt from "./SongPixelArt";
 
 function generateStableHash(id: string) {
   const hash = id.split("").reduce((acc, char) => {
@@ -32,10 +32,12 @@ export function SongCard({ song }: SongCardProps) {
 
   const handlePlayPause = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (isSongPlaying) {
+    if (currentSong?.id === song.id) {
       togglePlayPause();
     } else {
-      setCurrentSongById(song.id);
+      setCurrentSongById(song.id).then(() => {
+        togglePlayPause();
+      });
     }
   };
 
@@ -44,15 +46,14 @@ export function SongCard({ song }: SongCardProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="relative w-16 h-16">
-            <Image
-              src={song.image}
-              alt={song.title}
-              fill
-              className="object-cover rounded"
+            <SongPixelArt
+              title={song.title}
+              artist={song.artist}
+              price={song.price}
             />
             <button
               onClick={handlePlayPause}
-              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity"
+              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity rounded-lg"
             >
               {isSongPlaying ? (
                 <Pause className="w-8 h-8 text-white" />
