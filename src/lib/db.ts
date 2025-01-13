@@ -1,6 +1,6 @@
 import { Song } from "@/types/song";
 
-const mockSongs: Song[] = [
+export const mockSongs: Song[] = [
   {
     id: "1",
     title: "Cyber Dreams",

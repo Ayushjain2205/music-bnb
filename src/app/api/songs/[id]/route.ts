@@ -1,4 +1,4 @@
-import { songs } from "@/lib/db";
+import { mockSongs } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 function generatePriceData(id: string) {
@@ -19,7 +19,8 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const song = songs[params.id];
+  const songId = parseInt(params.id);
+  const song = mockSongs[songId];
 
   if (!song) {
     return new NextResponse("Not found", { status: 404 });

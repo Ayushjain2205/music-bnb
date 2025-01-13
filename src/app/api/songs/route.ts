@@ -1,4 +1,4 @@
-import { songs } from "@/lib/db";
+import { mockSongs } from "@/lib/db";
 import { NextResponse } from "next/server";
 
 function generatePriceData(id: string) {
@@ -16,7 +16,7 @@ function generatePriceData(id: string) {
 }
 
 export async function GET() {
-  const songList = Object.entries(songs).map(([id, song]) => {
+  const songList = Object.entries(mockSongs).map(([id, song]) => {
     const priceData = generatePriceData(id);
     const currentPrice = priceData[priceData.length - 1].price;
     const initialPrice = priceData[0].price;
