@@ -1,0 +1,22 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "create_music_token",
+      "inputs": [
+        { "name": "initial_price", "type": "u256" },
+        { "name": "metadata_uri", "type": "felt252" }
+      ],
+      "outputs": [{ "type": "u256" }]
+    },
+    {
+      "type": "function",
+      "name": "buy_tokens",
+      "inputs": [
+        { "name": "token_id", "type": "u256" },
+        { "name": "amount", "type": "u256" }
+      ],
+      "outputs": []
+    }
+  ]
+}

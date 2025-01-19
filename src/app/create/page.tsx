@@ -10,6 +10,8 @@ import SongPixelArt from "@/components/SongPixelArt";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { useMusicPlayer } from "@/app/contexts/MusicPlayerContext";
 import { Loader2, Play, Pause, Share2, Zap, Rocket } from "lucide-react";
+import { useMusicToken } from "@/hooks/useMusicToken";
+import { useWallet } from "@/hooks/useWallet";
 
 const genres = [
   "Synthwave",
@@ -38,6 +40,9 @@ export default function CreatePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const { currentSong, isPlaying, togglePlayPause, setCurrentSongById } =
     useMusicPlayer();
+  const { createMusicToken, loading: tokenLoading } = useMusicToken();
+  const { address } = useWallet();
+  const [price, setPrice] = useState(0.001); // Initial price in ETH
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -60,6 +65,40 @@ export default function CreatePage() {
 
   const getTicker = (title: string) => {
     return `$${title.replace(/\s+/g, "").slice(0, 4).toUpperCase()}`;
+  };
+
+  const handleDeploy = async () => {
+    if (!address) {
+      alert("Please connect your wallet first");
+      return;
+    }
+
+    try {
+      // First, upload metadata to IPFS or your preferred storage
+      const metadata = {
+        title: songTitle,
+        description: prompt,
+        genre,
+        mood,
+        duration,
+        audioUrl: generatedAudio,
+      };
+
+      // Replace with your actual metadata storage logic
+      const metadataUri = await uploadMetadata(metadata);
+
+      // Create music token
+      const initialPriceWei = ethers.utils
+        .parseEther(price.toString())
+        .toString();
+      await createMusicToken(songTitle, initialPriceWei, metadataUri);
+
+      // Handle success
+      alert("Song successfully deployed as a music token!");
+    } catch (error) {
+      console.error("Failed to deploy song:", error);
+      alert("Failed to deploy song. Please try again.");
+    }
   };
 
   return (
@@ -247,9 +286,22 @@ export default function CreatePage() {
                       Share
                     </Button>
                   </div>
-                  <Button className="w-full bg-gradient-to-r from-[#00FFFF] to-[#FF00FF] text-[#0D0D15] hover:from-[#66FFFF] hover:to-[#FF66B8] font-exo2 text-lg py-4 flex items-center justify-center">
-                    <Rocket className="w-6 h-6 mr-2" />
-                    Deploy Song
+                  <Button
+                    onClick={handleDeploy}
+                    disabled={tokenLoading}
+                    className="w-full bg-gradient-to-r from-[#00FFFF] to-[#FF00FF] text-[#0D0D15] hover:from-[#66FFFF] hover:to-[#FF66B8] font-exo2 text-lg py-4 flex items-center justify-center"
+                  >
+                    {tokenLoading ? (
+                      <>
+                        <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                        Deploying...
+                      </>
+                    ) : (
+                      <>
+                        <Rocket className="w-6 h-6 mr-2" />
+                        Deploy Song
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

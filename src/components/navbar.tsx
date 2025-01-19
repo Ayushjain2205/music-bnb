@@ -4,17 +4,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/hooks/useWallet";
 import { Loader2 } from "lucide-react";
+import { Abstraxion, useModal } from "@burnt-labs/abstraxion";
 
 export function Navbar() {
-  const { connectWallet, disconnect, address, loading, error } = useWallet();
-
-  const handleConnect = async () => {
-    if (address) {
-      disconnect();
-    } else {
-      await connectWallet();
-    }
-  };
+  const { account, loading } = useWallet();
+  const [, setShow] = useModal();
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -35,10 +29,10 @@ export function Navbar() {
         </Link>
         <nav className="space-x-6">
           <Link
-            href="#"
+            href="/create"
             className="text-[#FF99D1] hover:text-[#FF00FF] font-exo2"
           >
-            FAQ
+            Create
           </Link>
           <Link
             href="#"
@@ -51,7 +45,7 @@ export function Navbar() {
       <Button
         className="bg-[#FF00FF] text-white hover:bg-[#FF66B8] font-exo2"
         size="lg"
-        onClick={handleConnect}
+        onClick={() => setShow(true)}
         disabled={loading}
       >
         {loading ? (
@@ -59,12 +53,13 @@ export function Navbar() {
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Connecting...
           </>
-        ) : address ? (
-          formatAddress(address)
+        ) : account ? (
+          formatAddress(account)
         ) : (
           "Connect Wallet"
         )}
       </Button>
+      <Abstraxion onClose={() => setShow(false)} />
     </header>
   );
 }
